@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stephen Quinlan | GIS Portfolio</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: auto; padding: 20px; }
+        .project { border-bottom: 1px solid #ccc; padding: 20px 0; }
+        img { max-width: 100%; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Environmental Science GIS Portfolio</h1>
+    
+    <div class="project">
+        <h2>1. Mapbox Improvement - Massachusetts Town Explorer</h2>
+        <p>This project represents a significant evolution from a static boundary map into a dynamic Web GIS application. Leveraging the Mapbox GL JS library, I implemented several advanced features to enhance user engagement and data accessibility. A primary technical improvement is the integration of the MediaWiki API, which allows for the display of updated information on each municipality. Since the town field was in all caps, I wrote a script to convert the names into title cases that were usable by the API. By stacking a highlight layer on top of the fill and using setFilter, the application improves the design and clarity for users. I also added simple navigation and scale controls to improve accessibility and presentation. 
+</p>
+        <a href="SLQMapbox.html">View Mapbox Project</a>
+    </div>
+
+    <div class="project">
+        <h2>U.S. Census Population Change (2010-2020)</h2>
+        <p>This ArcGIS Online production provides a granular, temporal analysis of U.S. population shifts by visualizing percent change in two-year increments. Building upon the 'US Population Increase' framework, I enhanced the project's analytical depth by creating five distinct temporal layers, each utilizing custom Arcade expressions to calculate and symbolize precise growth rates. To ensure a professional and intuitive user experience, I implemented an Interactive Legend and a managed Layer List, allowing users to seamlessly cycle through different time periods and observe gradual demographic trends. The map’s Custom Styles use a consistent diverging color ramp to highlight both growth and decline, while the Appropriate Geographic Extent was meticulously set to ensure that all census tracts are immediately visible upon loading, providing a cohesive narrative of national urbanization patterns.
+</p>
+        <a href="https://umass-amherst.maps.arcgis.com/apps/instant/interactivelegend/index.html?appid=63e3343772204c63a2d270c39bb217a1
+" target="_blank">Launch ArcGIS Web App</a>
+    </div>
+
+    <div class="project">
+        <h2>Massachusetts DCR Water Quality Monitoring Intensity</h2>
+        <p>This Web GIS application evaluates the spatial distribution and density of Department of Conservation and Recreation (DCR) water quality monitoring stations across Massachusetts. To provide a rigorous analytical perspective, I implemented a custom Arcade expression that reclassified both the symbology and labeling of the dataset, transitioning from raw point totals to a normalized density metric (stations per square mile). This allows for a more accurate assessment of monitoring intensity relative to the size of each protected area. I also added contextual pop-ups that utilize spatial joins to display administrative metadata, including the names of the ACECs and the specific Secretaries overseeing them.  
+</p>
+        <a href="https://umass-amherst.maps.arcgis.com/apps/instant/basic/index.html?appid=a5de9b9ea56c451197cf635f0b84b8de
+" target="_blank">Launch ArcGIS Analysis</a>
+    </div>
+</body>
+</html>
