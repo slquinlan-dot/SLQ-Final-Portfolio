@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Massachusetts Town Explorer</title>
+
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#title {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    z-index: 1;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+#legend {
+    position: absolute;
+    bottom: 30px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    z-index: 1;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    margin-right: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="title">
+    <h2>Massachusetts Town Explorer</h2>
+    <p>Click on a town to learn more!</p>
+</div>
+
+<div id="legend">
+    <h4>Legend</h4>
+
+    <div>
+        <span class="legend-color" style="background:#1f2020;"></span>
+        Town Polygons
+    </div>
+</div>
+
+<div id="map"></div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoic2xxdWlubGFuIiwiYSI6ImNtb3p5amg0ajBuajQyc3B1d2Jkdmh1am0ifQ.lwMDnWxh7BtI9HnFQZUrOQ';
+
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/slquinlan/cmp01cl13003u01qi0d079c7t',
+    center: [-71.2, 42.35],
+    zoom: 9,
+    minZoom: 9,
+    maxZoom: 16
+});
+
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+map.addControl(new mapboxgl.ScaleControl(), 'bottom-right');
+
+map.on('load', () => {
+
+
+    map.addLayer({
+        "id": "town-highlight-layer",
+        "type": "fill",
+        "source": "composite",
+        "source-layer": "MassTowns-5cu370",
+        "minzoom": 9,
+        "paint": {
+            "fill-opacity": 0.8,
+            "fill-outline-color": "#e70808", 
+            "fill-color": "#34eaaa"          
+        }
+    });
+    
+map.setFilter('town-highlight-layer', ['==', 'TOWN', 'HIDDEN_INITIAL_STATE']);
+
+    map.on('click', 'mass-towns', (e) => {
+        const rawTownName = e.features[0].properties.TOWN || "";
+
+        
+        map.setFilter('2', ['==', ['get', 'TOWN'], rawTownName]);
+
+        
+        const formattedTownName = rawTownName
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        const fullSearchTitle = `${formattedTownName}, Massachusetts`;
+        const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(fullSearchTitle)}`;
+
+        fetch(wikiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                
+                const extract = (pageId === "-1") 
+                    ? `No specific Wikipedia entry found for ${formattedTownName}.` 
+                    : pages[pageId].extract.substring(0, 250) + "...";
+
+                const link = `https://en.wikipedia.org/wiki/${encodeURIComponent(fullSearchTitle)}`;
+
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(`
+                        <div style="max-height: 200px; overflow-y: auto; font-family: sans-serif;">
+                            <h3 style="margin: 0 0 5px 0; color: #2c3e50;">${formattedTownName}</h3>
+                            <p style="font-size: 0.9em; line-height: 1.4; color: #34495e;">${extract}</p>
+                            <a href="${link}" target="_blank" style="color: #3498db; text-decoration: none; font-weight: bold;">View on Wikipedia →</a>
+                        </div>
+                    `)
+                    .addTo(map);
+            })
+            .catch(err => console.error("Wiki Fetch Error:", err));
+    });
+
+    // HOVER-EFFECT
+    map.on('mouseenter', 'mass-towns', () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'mass-towns', () => {
+        map.getCanvas().style.cursor = 'default';
+    });
+});
+</script>
+
+</body>
+</html>
